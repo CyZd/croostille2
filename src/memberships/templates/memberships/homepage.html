@@ -1,0 +1,18 @@
+{% extends "courses/base.html"%}
+
+{% block title %}
+    Croostille : accueil
+{% endblock %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        Bonjour {{ user.username }}.
+        <p><a href="{% url 'logout' %}">Se déconnecter</a></p>
+        <p><a href="{% url 'password_reset' %}">Changer mon mot de passe</a></p>
+    {% else %}
+    <p>Vous n'êtes pas connecté(e)</p>
+    <a href="{% url 'login' %}">Se connecter</a> |
+    <a href='/offres'>S'inscrire</a>
+    {% endif %}
+
+{% endblock %}

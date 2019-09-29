@@ -1,0 +1,12 @@
+{% extends 'courses/base.html' %}
+    {% block content%}
+        <h1>Votre programme de la semaine</h1>
+
+        {% if object is not None %}
+            {{ object.title }}
+            {{ object.description }}
+        {% else %}
+            <h3>Vous ne pouvez pas voir le contenu de cette semaine</h3>
+        {% endif %}
+    {% endblock %}
+        

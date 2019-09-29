@@ -1,0 +1,23 @@
+{% if messages %}
+
+    <div class="messages">
+        <ul class="messages">
+        {% for message in messages %}
+            <li {% if messages.tags %} class="{{ messages.tags}}"{% endif %}>
+                {% if "html_safe" in messages.tags %}{{ message|safe }}{ %else %}{{ message }}{% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+
+    <style type="text/css">
+        div.messages{
+            background-color: #ff6b6b;
+            color: #f7fff7;
+        }
+        ul.messages{
+            list-style-type:none;
+        }
+    </style>
+
+{% endif %}

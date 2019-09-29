@@ -1,0 +1,41 @@
+Modèles:architecture
+
+membership:
+    -slug
+    -membership type
+    - price
+    -stripe plan id
+
+user membership
+    - user (foreignkey->user default)
+    - stripe customer id
+    - membership type (foreignkey->membership)
+
+Subscription
+    -user membership
+    -stripe subscription id (foreignkey->usermembership)
+    -active
+
+Course
+    -slug
+    -title
+    -description
+    -allowedmembership (foreignkey->membership)
+
+Lesson
+    -slug
+    -title
+    -description
+    -course (foreignkey->course)
+    -position
+    -media
+    -image
+
+Execise
+    -slug
+    -title
+    -description
+    -lesson (foreignkey->course)
+    -position
+    -media
+    -image

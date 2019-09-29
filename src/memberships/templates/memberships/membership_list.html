@@ -1,0 +1,46 @@
+{% extends 'courses/base.html' %}
+
+{% block content %}
+
+<div class="Container">
+    <h1>Choisissez une offre</h1>
+    <div class="row">
+        {% for object in object_list%}
+
+            <div class="col-sm-4 col-md-4">
+                {{ object.membership_type }}
+                <br/>Prix: {{ object.price }}<small> par mois</small>
+                <h4>Inclus dans le prix:</h4>
+                <ul>
+                    {% for challenge in object.challenge_set.all %}
+                        <li>{{ challenge.title }}</li>
+                    {% endfor %}
+                </ul>
+                    
+                        <form method="POST" action="{% url 'memberships:offres' %}">
+
+                        {% csrf_token %}
+                        {% if request.user.is_authenticated %}
+                            {% if object.membership_type != current_membership %}
+                                <button class="btn btn-warning">Je m'inscris</button>
+                                <input type="hidden" name="membership_type" value="{{ object.membership_type }}">
+                            {% else %}
+                                <small>Il s'agit de votre abbonnement actuel</small>
+                            {% endif %}
+                            <input type="hidden" name="membership_type" value="{{ object.membership_type }}">
+                        {% else %}
+                            <button class="btn btn-warning">Je m'inscris</button>
+                            <input type="hidden" name="membership_type" value="{{ object.membership_type }}">
+                        {% endif %}
+                        </form>
+                    
+                        
+                    
+            </div>
+
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock content %}

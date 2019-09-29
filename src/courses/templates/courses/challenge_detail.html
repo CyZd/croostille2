@@ -1,0 +1,8 @@
+{% extends 'courses/base.html' %}
+    {% block content%}
+
+        <h1>{{ object.title }}</h1>
+        {% for week in object.weeks %}
+            <a href="{{ week.get_absolute_url }}">{{ week.title }}</a>
+        {% endfor %}
+    {% endblock %}
