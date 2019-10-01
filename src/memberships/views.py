@@ -18,11 +18,11 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.urls import reverse
 from django.urls import reverse_lazy
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, request
 
 import stripe
 
-#import request
+
 
 def userHomepage(request):
     return render(request,'memberships/homepage.html')
@@ -44,9 +44,13 @@ def profile_view(request):
     return render(request,"memberships/profile.html", context)
 
 def get_user_membership(request):
-    user_membership_queryset=UserMembership.objects.filter(user=request.user)
-    if user_membership_queryset.exists():
-        return user_membership_queryset.first()
+    if AnonymousUser.is_anonymous:
+        return request.session.get('membership_type')
+    else:
+        user_membership_queryset=UserMembership.objects.filter(user=request.user)
+        if user_membership_queryset.exists():
+            print("user membership:"+user_membership_queryset.first())
+            return user_membership_queryset.first()
     return None
 
 def get_user_subscription(request):
@@ -55,29 +59,37 @@ def get_user_subscription(request):
     )
     if user_subscription_queryset.exists():
         user_subscription=user_subscription_queryset.first()
+        print("user subscription:"+user_subscription_queryset.first())
         return user_subscription
     return None
 
 def get_selected_membership(request):
-    membership_type=request.session['selected_membership_type']
+    membership_type=request.session['membership']
     selected_membership_queryset=Membership.objects.filter(
             membership_type=request.POST.get('membership_type')
         )
     if selected_membership_queryset.exists():
         return selected_membership_queryset.first()
+    else:
+        return request.session.get('membership')
     return None
 
+def get_stripe_id(request,name):
+    selected_membership_queryset=Membership.objects.filter(
+            membership_type=name
+        )
+    return selected_membership_queryset.first()
+
 class UserCreateProfile(generic.CreateView):
-    membership = request.session.get('membership')
+    def get_membership(request):
+        membership = request.session.get('membership')
+    
     form_class = CustomUserCreationForm
-    success_url = reverse_lazy('creer_profil')
+    success_url = reverse_lazy('memberships:paiement')
     template_name = 'memberships/registration/userCreateProfile.html'
 
 class MembershipSelectView(ListView):
     model = Membership
-    def anonymous_redirect(request):
-        if request.user.is_anonymous:
-            return HttpResponseRedirect('memberships/createProfile')
 
     def get_context_data(self, *args, **kwargs):
         if not AnonymousUser.is_anonymous:
@@ -90,7 +102,7 @@ class MembershipSelectView(ListView):
             return context
     
     def post(self, request, **kwargs):
-        if request.user.is_anonymous:
+        if AnonymousUser.is_anonymous:
             membership_type=request.POST.get('membership_type')
             request.session['membership']=membership_type
             return HttpResponseRedirect('createProfile')
@@ -116,8 +128,10 @@ class MembershipSelectView(ListView):
             return HttpResponseRedirect(reverse('memberships:paiement'))
 
 def PaymentView(request):
-    user_membership=get_user_membership(request)
+    user_membership_queryset=UserMembership.objects.filter(user=request.user)
+    user_membership=user_membership_queryset.first()
     selected_membership=get_selected_membership(request)
+    stripe_plan=get_stripe_id(request,selected_membership)
 
     publishKey=settings.STRIPE_PUBLISHABLE_KEY
 
@@ -128,7 +142,7 @@ def PaymentView(request):
                 customer=user_membership.stripe_customer_id,
                 items=[
                     {
-                        "plan": selected_membership.stripe_plan_id,
+                        "plan": stripe_plan
                     },
                 ],
                 default_source=token,

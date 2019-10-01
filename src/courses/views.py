@@ -5,12 +5,35 @@ from .models import Challenge, Week
 
 from memberships.models import UserMembership
 
+from django.contrib.auth.models import User
+
+from datetime import datetime,date
+from django.utils import formats
+
+def user_is_old(request):
+    user_joined_date=formats.date_format(request.user.date_joined, "DATE_FORMAT")
+    formated_date=datetime.strptime(user_joined_date,"%B %d,%Y").date()
+    current_time=date.today()
+
+    delta=current_time-formated_date
+
+    result=delta.days
+
+    return result
 
 class CourseListView(ListView):
     model=Challenge
 
 class CourseDetailView(DetailView):
     model=Challenge
+
+    def get(self, request, *args,**kwargs):
+        user_days=user_is_old(request)
+        context={
+            'user_days':user_days
+            }
+
+        return render(request,"courses/challenge_detail.html",context)
 
 class WeekDetailView(View):
 
@@ -36,10 +59,13 @@ class WeekDetailView(View):
         context={
             'object':None 
         }
+
+        user_days=user_is_old(request)
         
         if challenge_allowed_membership_type.filter(membership_type=user_membership_type).exists:
             context={
-                'object':week
+                'object':week,
+                'user_days':user_days
             }
 
         return render(request,"courses/week_detail.html",context)

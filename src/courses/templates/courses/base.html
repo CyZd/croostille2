@@ -17,15 +17,19 @@
         <div class="container">
             <ol class="breadcrumb">
                 <li><a href='/challenges'>Accueil</a></li>
-                {% if user_subscription != None %}
+                {% if user.is_authenticated %}
                 <li><a href='/offres/profile'>Mon profil</a></li>
                 {% endif %}
                 {% block post_detail_link %}
                 {% endblock %}
-
+                {% if not user.is_authenticated %}
                 <li class="pull-right"><a href={% url 'login' %}>Me connecter</a></li>
-
+                {% endif %}
                 <li class="pull-right"><a href='/offres'>Nos offres</a></li>
+
+                {% if user.is_authenticated %}
+                <li class="pull-right"><a href="{% url 'logout' %}?next=/">Me déconnecter</a></li>
+                {% endif %}
 
             </ol>
         </div>
@@ -37,7 +41,7 @@
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 
-    <body>
+    </body>
 
 
 </html>

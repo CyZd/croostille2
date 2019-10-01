@@ -25,6 +25,28 @@ SECRET_KEY = 'v4u2kyqa$9fbrle6ry(u$t^xc_5w%2qzg7wdsyp9q(hwj3w8+v'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+if DEBUG:
+   INTERNAL_IPS = ('127.0.0.1', 'localhost',)
+
+   DEBUG_TOOLBAR_PANELS = [
+       'debug_toolbar.panels.versions.VersionsPanel',
+       'debug_toolbar.panels.timer.TimerPanel',
+       'debug_toolbar.panels.settings.SettingsPanel',
+       'debug_toolbar.panels.headers.HeadersPanel',
+       'debug_toolbar.panels.request.RequestPanel',
+       'debug_toolbar.panels.sql.SQLPanel',
+       'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+       'debug_toolbar.panels.templates.TemplatesPanel',
+       'debug_toolbar.panels.cache.CachePanel',
+       'debug_toolbar.panels.signals.SignalsPanel',
+       'debug_toolbar.panels.logging.LoggingPanel',
+       'debug_toolbar.panels.redirects.RedirectsPanel',
+   ]
+
+   DEBUG_TOOLBAR_CONFIG = {
+       'INTERCEPT_REDIRECTS': False,
+   }
+
 ALLOWED_HOSTS = []
 
 
@@ -38,7 +60,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'memberships',
-    'courses'
+    'courses',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +72,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'Croostille.urls'
@@ -141,6 +165,6 @@ if DEBUG:
     STRIPE_SECRET_KEY='sk_test_UyY88AsxgBLXgp0sWFsZm8gn'
 else:
     STRIPE_PUBLISHABLE_KEY='pk_test_eALE5Dsa8rGnr0TfGJTY5b7E'
-    STRIPE_SECRET_KEY=''
+    STRIPE_SECRET_KEY='sk_test_UyY88AsxgBLXgp0sWFsZm8gn'
 
 LOGIN_REDIRECT_URL = '/offres/profile/'
